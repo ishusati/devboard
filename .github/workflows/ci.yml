@@ -1,18 +1,27 @@
-# this code for devops CICD pipneline 
+
 name: CICD
 
 on:
   push:
     branches: [advance]
 
+  pull_request:
+    branches: [advance]
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
+      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v7
 
+      # Step 2: Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
@@ -20,14 +29,18 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
+      # Step 3: Install dependencies
       - name: Install dependencies
-        run: npm install
-        working-directory: frontend
+        run: npm ci
 
+      # Step 4: Run lint
       - name: Run lint
         run: npm run lint
-        working-directory: frontend
 
+      # Step 5: Run tests
       - name: Run tests
         run: npm test
-        working-directory: frontend
+
+      # Step 6: Build frontend
+      - name: Build frontend
+        run: npm run build
